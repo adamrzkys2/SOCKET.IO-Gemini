@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO Chat</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f8f9fa; }
+        #chat { max-width: 500px; width: 100%; }
+        #messages { list-style-type: none; padding: 0; }
+        #messages li { padding: 10px; margin-bottom: 10px; background-color: #f1f1f1; border-radius: 5px; }
+        #form { display: flex; }
+        #input { flex: 1; }
+    </style>
+</head>
+<body>
+    <div id="chat" class="card">
+        <div class="card-header">OPENAI CHAT BY SOCKET.IO</div>
+        <ul id="messages" class="list-group list-group-flush"></ul>
+        <div class="card-footer">
+            <form id="form" action="">
+                <input id="input" class="form-control mr-2" autocomplete="off" placeholder="Type a message..." />
+                <button class="btn btn-primary">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+        const messages = document.getElementById('messages');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (input.value) {
+                socket.emit('chat message', input.value);
+                input.value = '';
+            }
+        });
+
+        socket.on('chat message', (msg) => {
+            const item = document.createElement('li');
+            item.textContent = "You:" + "" + msg;
+            item.classList.add('list-group-item');
+            messages.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+        socket.on("reply", (msg) =>{
+            const item = document.createElement('li');
+            item.textContent = "Server:" + "" + msg;
+            item.classList.add('list-group-item');
+            messages.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+        })
+    </script>
+</body>
+</html>
